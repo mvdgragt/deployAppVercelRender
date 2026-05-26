@@ -1,5 +1,7 @@
 import "dotenv/config";
 import express from "express";
+import cors from "cors";
+import userRoutes from "./src/routes/userRoutes.ts";
 import { PrismaClient } from "./generated/prisma_client/client.ts";
 import { PrismaPg } from "@prisma/adapter-pg";
 const adapter = new PrismaPg({
@@ -9,7 +11,19 @@ const app = express();
 const prisma = new PrismaClient({
   adapter,
 });
+
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+    methods: ["GET", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type"],
+  }),
+);
+
 app.use(express.json());
+
+app.use("/users", userRoutes);
+
 // Get all users
 app.get("/", async (req, res) => {
   const userCount = await prisma.user.count();
