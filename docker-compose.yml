@@ -35,6 +35,23 @@ services:
       DATABASE_URL: "postgresql://postgres:prisma@postgres_db:5432/postgres?schema=public"
     networks:
       - prisma-network
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      VITE_API_URL: "http://localhost:3000"
+    networks:
+      - prisma-network
+    depends_on:
+      server:
+        condition: service_started
+
   prisma-studio:
     image: node:22-alpine
     working_dir: /usr/src/app
