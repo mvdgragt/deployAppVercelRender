@@ -14,7 +14,7 @@ const prisma = new PrismaClient({
 
 app.use(
   cors({
-    origin: "*",
+    origin: process.env.CLIENT_URL,
     methods: ["GET", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type"],
   }),
