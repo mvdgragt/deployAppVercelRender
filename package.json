@@ -6,6 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "tsx app.ts",
+    "build": "prisma generate",
+    "start": "tsx app.ts",
     "db:deploy": "npx prisma migrate deploy && npx prisma generate"
   },
   "prisma": {
