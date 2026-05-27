@@ -1,21 +1,20 @@
 import type { Request, Response } from "express";
 import "dotenv/config";
-import express from "express";
 import { PrismaClient } from "../../generated/prisma_client/client.ts";
 import { PrismaPg } from "@prisma/adapter-pg";
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL,
 });
-const app = express();
 const prisma = new PrismaClient({
   adapter,
 });
 
-export const getUsers = async (req: Request, res: Response) => {
+export const getUsers = async (_req: Request, res: Response) => {
   try {
     const users = await prisma.user.findMany();
     res.json(users);
   } catch (error) {
+    console.error("getUsers error:", error);
     res
       .status(500)
       .send(error instanceof Error ? error.message : "Unknown error");
