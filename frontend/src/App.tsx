@@ -28,8 +28,13 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
 
   async function fetchUsers() {
-    const res = await fetch(`${API}/users`);
-    setUsers(await res.json());
+    try {
+      const res = await fetch(`${API}/users`);
+      if (!res.ok) throw new Error(await res.text());
+      setUsers(await res.json());
+    } catch {
+      // leave existing list intact on fetch failure
+    }
   }
 
   useEffect(() => {
@@ -43,23 +48,25 @@ export default function App() {
 
     try {
       if (editingId !== null) {
-        await fetch(`${API}/users/${editingId}`, {
+        const res = await fetch(`${API}/users/${editingId}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body),
         });
+        if (!res.ok) throw new Error(await res.text());
         setEditingId(null);
       } else {
-        await fetch(`${API}/users`, {
+        const res = await fetch(`${API}/users`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body),
         });
+        if (!res.ok) throw new Error(await res.text());
       }
       setForm(emptyForm);
       fetchUsers();
-    } catch {
-      setError("Request failed.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Request failed.");
     }
   }
 
